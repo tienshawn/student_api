@@ -19,6 +19,22 @@ client = MongoClient('mongodb://localhost:27017/')
 db = client.flask_db
 student_database = db.student_database
 
+@application.route('/')
+def get_all_students():
+    students = []
+    for element in student_database.find():
+        student = {
+            'id': str(element['_id']),
+            'name': element['name'],
+            'gender': element['gender'],
+            'birth': element['birth'],
+            'university': element['university'],
+            'country': element['country']
+        }
+        students.append(student)
+
+    return jsonify(students)
+
 
 
 
