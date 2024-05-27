@@ -81,6 +81,22 @@ def delete_student(id):
     return jsonify({"status": 'success'})
 
 
+@application.route('/<id>', methods=['PUT'])
+def update_student(id):
+    student_data = request.get_json()
+    updated_student = {
+
+        'name': student_data['name'],
+        'gender': student_data['gender'],
+        'birth': student_data['birth'],
+        'university': student_data['university'],
+        'country': student_data['country']
+    }
+    student_database.replace_one({'_id': ObjectId(id)}, updated_student)
+
+    return jsonify({"status": 'success'})
+
+
 
 if __name__ == '__main__':
     application.run(debug=True)
