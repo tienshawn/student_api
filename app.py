@@ -75,5 +75,12 @@ def get_student(id):
         return jsonify({"error": "Student not found"})
 
 
+@application.route('/<id>', methods=['DELETE'])
+def delete_student(id):
+    student_database.delete_one({'_id': ObjectId(id)})
+    return jsonify({"status": 'success'})
+
+
+
 if __name__ == '__main__':
     application.run(debug=True)
