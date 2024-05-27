@@ -57,5 +57,23 @@ def create_student():
     return jsonify({"status": 'success'})
 
 
+@application.route('/<id>', methods=['GET'])
+def get_student(id):
+    student = student_database.find_one({'_id': ObjectId(id)})
+
+    if student:
+        student_detail = {
+            'id': str(student['_id']),
+            'name': student['name'],
+            'gender': student['gender'],
+            'university': student['university'],
+            'birth': student['birth'],
+            'country': student['country']
+        }
+        return jsonify(student_detail)
+    else:
+        return jsonify({"error": "Student not found"})
+
+
 if __name__ == '__main__':
     application.run(debug=True)
