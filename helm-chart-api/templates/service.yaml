@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend-service
+  # labels:
+  #   group: {{ .Values.app.group }}
+  # annotations:
+  #   konghq.com/plugins: {{ .Values.app.kongplugins }}
+spec:
+  type: {{ .Values.app.service.type }}
+  selector:
+    app: {{ .Values.app.name }}
+  ports:
+    - port: {{ .Values.app.service.port }}
+      targetPort: {{ .Values.app.container.port }}
+      nodePort: {{ .Values.app.service.nodePort}}
+      # protocol: {{ .Values.app.container.protocol }}
