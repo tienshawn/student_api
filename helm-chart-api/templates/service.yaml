@@ -2,8 +2,8 @@ apiVersion: v1
 kind: Service
 metadata:
   name: backend-service
-  # labels:
-  #   group: {{ .Values.app.group }}
+  labels:
+    app: {{ .Values.app.name }}
   # annotations:
   #   konghq.com/plugins: {{ .Values.app.kongplugins }}
 spec:
