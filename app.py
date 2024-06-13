@@ -2,9 +2,16 @@ from flask import Flask, jsonify, request
 from pymongo import MongoClient
 from flask_cors import CORS
 from bson import ObjectId
+from prometheus_flask_exporter import PrometheusMetrics
+import logging
 
+
+logging.basicConfig(level=logging.INFO)
+logging.info("Setting LOGLEVEL to INFO")
 
 application = Flask(__name__)
+
+metrics = PrometheusMetrics(app=None, path='/metrics')
 CORS(application)
 
 application.secret_key = 'xyzsdfg'
@@ -12,10 +19,10 @@ application.secret_key = 'xyzsdfg'
 client = MongoClient("mongodb://db:27017/VDT24")
 db = client.flask_db
 
-
 student_database = db.student_database
+metrics.info('app_info', 'Application info', version='1.0.3')
 
-@application.route('/')
+@application.route('/api/')
 def get_all_students():
     students = []
     for element in student_database.find():
@@ -32,7 +39,7 @@ def get_all_students():
     return jsonify(students)
 
 
-@application.route('/', methods=['POST'])
+@application.route('/api/', methods=['POST'])
 def create_student():
     student_data = request.get_json()
     student_name = student_data['name']
@@ -53,7 +60,7 @@ def create_student():
     return jsonify({"status": 'success'})
 
 
-@application.route('/<id>', methods=['GET'])
+@application.route('/api/<id>', methods=['GET'])
 def get_student(id):
     student = student_database.find_one({'_id': ObjectId(id)})
 
@@ -71,13 +78,13 @@ def get_student(id):
         return jsonify({"error": "Student not found"})
 
 
-@application.route('/<id>', methods=['DELETE'])
+@application.route('/api/<id>', methods=['DELETE'])
 def delete_student(id):
     student_database.delete_one({'_id': ObjectId(id)})
     return jsonify({"status": 'success'})
 
 
-@application.route('/<id>', methods=['PUT'])
+@application.route('/api/<id>', methods=['PUT'])
 def update_student(id):
     student_data = request.get_json()
     updated_student = {
@@ -93,6 +100,6 @@ def update_student(id):
     return jsonify({"status": 'success'})
 
 
-
 if __name__ == '__main__':
-    application.run(debug=True)
+    metrics.init_app(application)
+    application.run(host="0.0.0.0", port=5000)
